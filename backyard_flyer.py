@@ -5,6 +5,7 @@ from nis import match
 #from sre_parse import State
 import time
 from enum import Enum
+from turtle import home
 
 import numpy as np
 
@@ -66,12 +67,10 @@ class BackyardFlyer(Drone):
 
         This triggers when `MsgID.LOCAL_VELOCITY` is received and self.local_velocity contains new data
         """
-        if self.flight_state == States.LANDING:
-            if self.global_position[2] - self.global_home[2] < 0.1:
-                if abs(self.local_position[2]) < 0.01:
-                    self.disarming_transition()
+        home_dist = self.global_position[2] - self.global_home[2]
+        if self.flight_state == States.LANDING and home_dist < 0.1 and abs(self.local_position[2]) < 0.01:
+            self.disarming_transition()
 
-        dist = np.linalg.norm(self.target_position[:2] - self.local_position[:2])
 
     def state_callback(self):
         """
